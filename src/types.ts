@@ -20,4 +20,7 @@ export interface IPost extends Document {
 // Utility type for error handling
 export interface ErrorWithMessage extends Error {
   message: string;
+  statusCode?: number; // Make this optional if not all errors have a status code
+  status?: string;  
+  isOperational?: boolean;
 }
