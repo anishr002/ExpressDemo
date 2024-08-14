@@ -1,9 +1,15 @@
 import { Router } from 'express';
 import { getAllUsers, createUser } from '../controllers/userController';
+import { checkProfileSize, upload } from '../helpers/multer';
 
-const router = Router();
+const userRouter = Router();
 
-router.get('/users', getAllUsers);
-router.post('/users', createUser);
+userRouter.get('/getall', getAllUsers);
+userRouter.post(
+  '/register',
+  checkProfileSize,
+  upload.single('profile_image'),
+  createUser,
+);
 
-export default router;
+export default userRouter;

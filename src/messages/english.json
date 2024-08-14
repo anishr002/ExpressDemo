@@ -1,0 +1,55 @@
+{
+  "auth": {
+    "emailPassNotFound": "Email or password not found.",
+    "incorrectPassword": "Email or password is incorrect.",
+    "loggedIn": "Logged in successfully.",
+    "invalidEmail": "Email is invalid.",
+    "invalidPassword": "Password should contain one uppercase letter, one lowercase letter, one special character, one number and minimum 8 length.",
+    "emailRequired": "Email is required.",
+    "invalidToken": "Token is invalid.",
+    "resetPasswordMailSent": "Reset password mail is sent. please check your inbox.",
+    "passwordChanged": "Password changed successfully.",
+    "unAuthorized": "You are un-authorized to perform this action.",
+    "passwordRequired": "Old and new passwords are required.",
+    "insufficientPermission": "In-sufficient permission.",
+    "profileFetched": "Profile fetched successfully.",
+    "profileUpdated": "Profile updated successfully.",
+    "invalidContactNumber": "Contact number is invalid.",
+    "oldAndNewPasswordSame": "New password should be different from old password.",
+    "forbidden": "You are forbidden to perform this action.",
+    "registered": "User registered successfully. Please check your inbox to verify your account.",
+    "passwordNotMatch": "Old password does not match.",
+    "resetPassword": "Password reset successfully.",
+    "emailExist": "Email already exist. please choose another email.",
+    "fillAll": "Please fill all the fields.",
+    "invitationEmailSubject": "Inviation to the SyncUpp.",
+    "completeProfile": "Complete your profile first to access Syncupp.",
+    "userUpdated": "User updated successful.",
+    "userVerified": "Your account verified successfully. Please login your account."
+  },
+
+  "admin": {
+    "adminNotFound": "Admin not found.",
+    "usersFetched": "Users fetched successfully.",
+    "skillFetched": "Skills fetched successfully.",
+    "skillExist": "Skills already exist.",
+    "statusChanges": "User status changed successfully.",
+    "userNotFound": "User does not exist.",
+    "notificationFetched": "Notification fetched successfully.",
+    "notificationRead": "Notification read successfully.",
+    "userDeleted": "User deleted successfully."
+  },
+  "user": {
+    "skillAdded": "Skill added successfully.",
+    "skillExist": "Skill already exist.",
+    "userNotActive": "User is not active.",
+    "userActivated": "User activated.",
+    "userNotVerified": "User is not verified.",
+    "userNotFound": "User does not exist."
+  },
+  "emailTemplate": {
+    "forgotPasswordSubject": "Reset your password now.",
+    "verifyUser": "Account verification."
+  },
+  "default": { "default": "Something went wrong." }
+}
