@@ -18,14 +18,8 @@ export const getAllUsers = asyncErrorHandler(
 
 export const createUser = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    // Log the entire request body for debugging
-    console.log('Request body:', req.body);
-
     // Ensure req.body.skills is an array of numbers
     let { skills, ...otherData } = req.body;
-
-    // Log the skills data type for debugging
-    console.log('Skills:', skills);
 
     // Check if skills is a string (e.g., JSON string) and try to parse it
     if (typeof skills === 'string') {

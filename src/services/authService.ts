@@ -24,8 +24,6 @@ class authService {
   Addusers = async (data: any, skills: any, images: any) => {
     try {
       const { email, password, name } = data;
-      console.log(images, 'images2344');
-
       if (!validateEmail(email)) {
         return throwError(returnMessage('auth', 'invalidEmail'));
       }
