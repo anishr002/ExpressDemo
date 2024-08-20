@@ -17,11 +17,55 @@ export const getAllUsers = asyncErrorHandler(
 );
 
 export const createUser = asyncErrorHandler(
-  async (req: Request, res: Response, next: any) => {
-    const users = await authService.Addusers(req.body, req.file);
+  async (req: Request, res: Response, next: NextFunction) => {
+    // Log the entire request body for debugging
+    console.log('Request body:', req.body);
+
+    // Ensure req.body.skills is an array of numbers
+    let { skills, ...otherData } = req.body;
+
+    // Log the skills data type for debugging
+    console.log('Skills:', skills);
+
+    // Check if skills is a string (e.g., JSON string) and try to parse it
+    if (typeof skills === 'string') {
+      try {
+        skills = JSON.parse(skills);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        return next(
+          new ErrorHandler(
+            'Invalid format for skills, could not parse JSON',
+            400,
+          ),
+        );
+      }
+    }
+
+    // Ensure skills is an array before proceeding
+    if (!Array.isArray(skills)) {
+      return next(
+        new ErrorHandler('Skills should be an array of numbers', 400),
+      );
+    }
+
+    // Convert and validate skills array
+    skills = skills.map((skill) => Number(skill)); // Convert to numbers
+
+    if (
+      !skills.every(
+        (skill: number) => typeof skill === 'number' && !isNaN(skill),
+      )
+    ) {
+      return next(
+        new ErrorHandler('All elements in skills should be numbers', 400),
+      );
+    }
+
+    // Pass validated data to the service
+    const users = await authService.Addusers(otherData, skills, req.files);
     if (typeof users === 'string') return next(new ErrorHandler(users, 400));
-    console.log(users, 'user');
-    sendResponse(res, true, 'userUpdated', users, 200);
+    sendResponse(res, true, 'userCreated', users, 200);
   },
 );
 

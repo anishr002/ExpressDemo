@@ -21,43 +21,44 @@ class authService {
     }
   };
   //register new user
-  Addusers = async (data: any, image: any) => {
+  Addusers = async (data: any, skills: any, images: any) => {
     try {
       const { email, password, name } = data;
+      console.log(images, 'images2344');
 
       if (!validateEmail(email)) {
-        console.log('sdd');
-
         return throwError(returnMessage('auth', 'invalidEmail'));
       }
       if (!passwordValidation(password)) {
-        console.log('sdd');
         return throwError(returnMessage('auth', 'invalidPassword'));
       }
       const finduser = await UserSchema.findOne({ email: email });
       if (finduser) {
         return throwError(returnMessage('auth', 'emailExist'));
       }
-      let imagePath = '';
-      if (image) {
-        imagePath = 'uploads/' + image.filename;
+
+      // Handle multiple images
+      const imagePaths: string[] = [];
+      if (images && images.length > 0) {
+        for (const image of images) {
+          imagePaths.push('uploads/' + image.filename);
+        }
       }
+
       let newUser = await UserSchema.create({
+        ...data,
         email,
         password,
         name,
-        ...(imagePath && { profile_image: imagePath }),
+        skills,
+        ...(imagePaths.length > 0 && { profile_image: imagePaths }),
       });
-      const verification_token = crypto.randomBytes(32).toString('hex');
 
+      const verification_token = crypto.randomBytes(32).toString('hex');
       const encode = encodeURIComponent(data?.email);
       const link = `localhost:3000/verify/?token=${verification_token}&email=${encode}`;
 
-      const user_verify_template = verifyUser(
-        link,
-        data?.name,
-        // data?.first_name + ' ' + data?.last_name,
-      );
+      const user_verify_template = verifyUser(link, data?.name);
       await sendEmail({
         email: email,
         subject: returnMessage('emailTemplate', 'verifyUser'),

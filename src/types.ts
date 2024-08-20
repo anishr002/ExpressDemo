@@ -10,8 +10,8 @@ export interface IUser extends Document {
   is_verified: boolean;
   is_active: boolean;
   is_deleted: boolean;
-  phoneNumber: Number;
-  skills: string;
+  phoneNumber: number;
+  skills: number[];
   terms: string;
   gender: string;
 }
