@@ -23,6 +23,9 @@ const UserSchema = new Schema<IUser>(
       required: [true, 'Password is required'],
     },
     profile_image: [{ type: String }],
+    provider: {
+      type: String,
+    },
     phoneNumber: { type: Number },
     gender: { type: String },
     skills: [{ type: Number }],

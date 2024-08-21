@@ -14,6 +14,7 @@ export interface IUser extends Document {
   skills: number[];
   terms: string;
   gender: string;
+  provider: string;
 }
 
 // Define types for other models (if any)
