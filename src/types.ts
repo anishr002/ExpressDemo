@@ -61,6 +61,8 @@ export interface AuthMessages {
   invitationEmailSubject: string;
   completeProfile: string;
   userUpdated: string;
+  passRequired: string;
+  userNotFound: string;
   userVerified: string;
 }
 

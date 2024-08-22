@@ -19,7 +19,7 @@ export default [
       '@typescript-eslint': tsPlugin, // Define the TypeScript ESLint plugin
     },
     rules: {
-      'no-console': ['warn', { allow: ['warn', 'error'] }], // Warn on console.log, allow warn and error
+      // 'no-console': ['warn', { allow: ['warn', 'error'] }], // Warn on console.log, allow warn and error
       ...pluginJs.configs.recommended.rules, // Include ESLint recommended rules
       ...tsPlugin.configs.recommended.rules, // Include TypeScript ESLint recommended rules
     },

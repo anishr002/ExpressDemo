@@ -20,7 +20,7 @@ const UserSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: [false, 'Password is required'],
     },
     profile_image: [{ type: String }],
     provider: {
@@ -51,6 +51,11 @@ UserSchema.pre('save', async function (next) {
   }
   next();
 });
+
+// Compare password method
+UserSchema.methods.comparePassword = function (candidatePassword: never) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = model<IUser>('User', UserSchema);
 export default User;

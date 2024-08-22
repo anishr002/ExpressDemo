@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { getAllUsers, createUser } from '../controllers/userController';
+import {
+  getAllUsers,
+  createUser,
+  createUserbySocial,
+} from '../controllers/userController';
 import { checkProfileSize, upload } from '../helpers/multer';
 
 const userRouter = Router();
@@ -13,6 +17,12 @@ userRouter.post(
   checkProfileSize, // Check file size before processing
   upload.array('profile_image', 10), // Handle multiple images; adjust the limit as needed
   createUser, // Controller function
+);
+userRouter.post(
+  '/social-login',
+  checkProfileSize, // Check file size before processing
+  upload.array('profile_image', 10), // Handle multiple images; adjust the limit as needed
+  createUserbySocial, // Controller function
 );
 
 export default userRouter;

@@ -6,6 +6,8 @@
     "invalidEmail": "Email is invalid.",
     "invalidPassword": "Password should contain one uppercase letter, one lowercase letter, one special character, one number and minimum 8 length.",
     "emailRequired": "Email is required.",
+    "passRequired": "Password is required.",
+    "userNotFound": "User not found",
     "invalidToken": "Token is invalid.",
     "resetPasswordMailSent": "Reset password mail is sent. please check your inbox.",
     "passwordChanged": "Password changed successfully.",
