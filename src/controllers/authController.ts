@@ -21,3 +21,33 @@ export const loginUser = asyncErrorHandler(
     sendResponse(res, true, 'loginSuccess', { user, token }, 200);
   },
 );
+
+export const forgotPassword = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+    if (!email) {
+      return next(new ErrorHandler('Email is required', 400));
+    }
+
+    const result = await authService.forgotPassword(email);
+    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
+
+    res.status(200).json(result);
+  },
+);
+
+export const resetPassword = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return next(new ErrorHandler('Password is required', 400));
+    }
+
+    const result = await authService.resetPassword(token, password);
+    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
+
+    res.status(200).json(result);
+  },
+);

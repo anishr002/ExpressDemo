@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 //const nodemailer = require('nodemailer');
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 // this function is used for the send email
 const sendEmail = async (payload: any) => {

@@ -27,7 +27,8 @@
     "invitationEmailSubject": "Inviation to the SyncUpp.",
     "completeProfile": "Complete your profile first to access Syncupp.",
     "userUpdated": "User updated successful.",
-    "userVerified": "Your account verified successfully. Please login your account."
+    "userVerified": "Your account verified successfully. Please login your account.",
+    "invalidTokenOrExpired": "Your rest token expired"
   },
 
   "admin": {

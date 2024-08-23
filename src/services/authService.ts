@@ -174,6 +174,70 @@ class authService {
       return error.message;
     }
   };
+
+  // Forgot password functionality
+  forgotPassword = async (email: string) => {
+    try {
+      // Validate email format
+      if (!validateEmail(email)) {
+        return throwError(returnMessage('auth', 'invalidEmail'));
+      }
+
+      // Find user by email
+      const user = await UserSchema.findOne({ email });
+      if (!user) {
+        return throwError(returnMessage('auth', 'userNotFound'));
+      }
+
+      // GENERATE A RANDOM RESET TOKEN
+      const resetToken = user.createResetPasswordToken();
+      await user.save();
+
+      // Send email with reset token
+      const resetUrl = `http://localhost:3000/auth/resetPassword/${resetToken}`;
+      const message = `You requested a password reset. Please use the following link to reset your password: ${resetUrl}. This link will expire in 10 minutes.`;
+
+      await sendEmail({
+        email: user.email,
+        subject: 'Password Reset Request',
+        message,
+      });
+
+      return { message: 'Password reset link sent to email', resetUrl };
+    } catch (error: any) {
+      return throwError(error.message);
+    }
+  };
+
+  // Reset password functionality
+  resetPassword = async (token: string, newPassword: string) => {
+    try {
+      // Find user with valid reset token
+      const hashedToken = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
+
+      console.log(hashedToken, 'hashedToken');
+      const user = await UserSchema.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetTokenExpires: { $gt: Date.now() },
+      });
+      if (!user) {
+        return throwError(returnMessage('auth', 'invalidTokenOrExpired'));
+      }
+
+      // Update password and clear reset token fields
+      user.password = newPassword;
+      user.passwordResetToken = undefined;
+      user.passwordResetTokenExpires = undefined;
+      await user.save();
+
+      return { message: 'Password reset successfully' };
+    } catch (error: any) {
+      return throwError(error.message);
+    }
+  };
 }
 
 export default authService;

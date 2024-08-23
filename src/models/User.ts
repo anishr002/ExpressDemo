@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 import { IUser } from '../types'; // Import IUser type
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
+import crypto from 'crypto';
 
 const UserSchema = new Schema<IUser>(
   {
@@ -31,6 +32,8 @@ const UserSchema = new Schema<IUser>(
     skills: [{ type: Number }],
     terms: { type: String },
     verification_token: { type: String },
+    passwordResetToken: { type: String },
+    passwordResetTokenExpires: { type: Date },
     is_deleted: { type: Boolean, default: false },
     is_active: { type: Boolean, default: false },
     is_verified: { type: Boolean, default: false },
@@ -55,6 +58,20 @@ UserSchema.pre('save', async function (next) {
 // Compare password method
 UserSchema.methods.comparePassword = function (candidatePassword: never) {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+UserSchema.methods.createResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+
+  console.log(resetToken, this.passwordResetToken);
+  return resetToken;
 };
 
 const User = model<IUser>('User', UserSchema);

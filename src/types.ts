@@ -15,6 +15,10 @@ export interface IUser extends Document {
   terms: string;
   gender: string;
   provider: string;
+  passwordResetToken: string | undefined;
+  passwordResetTokenExpires: Date | undefined;
+
+  createResetPasswordToken(): string;
 }
 
 // Define types for other models (if any)
@@ -64,6 +68,7 @@ export interface AuthMessages {
   passRequired: string;
   userNotFound: string;
   userVerified: string;
+  invalidTokenOrExpired: string;
 }
 
 export interface AdminMessages {
