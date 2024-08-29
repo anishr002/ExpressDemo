@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-// import User from '../models/User';
-// import CustomError from '../utils/CustomError';
 import asyncErrorHandler from '../helpers/catchAsyncError';
 import AuthService from '../services/authService';
 import ErrorHandler from '../helpers/errorHandler';
@@ -10,9 +8,17 @@ const authService = new AuthService();
 
 export const getAllUsers = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const users = await authService.Getallusers();
+    const { search, page = 1, limit = 4 } = req.query;
+
+    const users = await authService.Getallusers(
+      search as string,
+      parseInt(page as string),
+      parseInt(limit as string),
+    );
+
     if (typeof users === 'string') return next(new ErrorHandler(users, 400));
-    sendResponse(res, true, 'userUpdated', users, 200);
+
+    sendResponse(res, true, 'Users fetched successfully', users, 200);
   },
 );
 
@@ -105,5 +111,14 @@ export const createUserbySocial = asyncErrorHandler(
 
     const { user, token } = result;
     sendResponse(res, true, 'userCreated', { user, token }, 200);
+  },
+);
+
+export const deleteUser = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    const result = await authService.DeleteUser(userId);
+    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
+    sendResponse(res, true, 'User deleted successfully', result, 200);
   },
 );

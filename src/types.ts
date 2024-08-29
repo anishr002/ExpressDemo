@@ -21,6 +21,15 @@ export interface IUser extends Document {
   createResetPasswordToken(): string;
 }
 
+export interface IProduct extends Document {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  image: string[];
+}
+
 // Define types for other models (if any)
 // Example: for a Post model
 export interface IPost extends Document {

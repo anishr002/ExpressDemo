@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import UserSchema from '../models/User';
+import UserSchema, { IUser } from '../models/User';
 import logger from '../logger/index';
 import {
   passwordValidation,
@@ -12,19 +12,47 @@ import crypto from 'crypto';
 import sendEmail from '../helpers/sendMail';
 import jwt from 'jsonwebtoken'; // Import jsonwebtoken
 import dotenv from 'dotenv';
+import { FilterQuery } from 'mongoose';
 dotenv.config();
 
 class authService {
   //get all users
-  Getallusers = async () => {
+  Getallusers = async (
+    searchQuery: string = '',
+    page: number = 1,
+    limit: number = 4,
+  ) => {
     try {
-      return await UserSchema.find();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const filter: FilterQuery<IUser> = {
+        is_deleted: false, // Exclude deleted users
+      };
+
+      if (searchQuery) {
+        filter.$or = [
+          { name: { $regex: searchQuery, $options: 'i' } },
+          { email: { $regex: searchQuery, $options: 'i' } },
+        ];
+      }
+
+      const users = await UserSchema.find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+
+      const totalUsers = await UserSchema.countDocuments(filter);
+
+      return {
+        users,
+        totalUsers,
+        totalPages: Math.ceil(totalUsers / limit),
+        currentPage: page,
+      };
     } catch (error: any) {
-      logger.error('Error while updating status', error);
+      logger.error('Error while getting users', error);
       return error.message;
     }
   };
+
   //register new user
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Addusers = async (data: any, skills: any, images: any) => {
@@ -235,6 +263,20 @@ class authService {
 
       return { message: 'Password reset successfully' };
     } catch (error: any) {
+      return throwError(error.message);
+    }
+  };
+
+  // Delete user
+  DeleteUser = async (userId: string) => {
+    try {
+      const user = await UserSchema.findByIdAndDelete(userId);
+      if (!user) {
+        return throwError(returnMessage('auth', 'userNotFound'));
+      }
+      return { message: 'User deleted successfully' };
+    } catch (error: any) {
+      logger.error('Error while deleting product', error);
       return throwError(error.message);
     }
   };

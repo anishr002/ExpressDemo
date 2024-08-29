@@ -3,6 +3,7 @@ import {
   getAllUsers,
   createUser,
   createUserbySocial,
+  deleteUser,
 } from '../controllers/userController';
 import { checkProfileSize, upload } from '../helpers/multer';
 
@@ -24,5 +25,7 @@ userRouter.post(
   upload.array('profile_image', 10), // Handle multiple images; adjust the limit as needed
   createUserbySocial, // Controller function
 );
+
+userRouter.delete('/deleteUser/:userId', deleteUser);
 
 export default userRouter;
