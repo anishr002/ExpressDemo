@@ -8,6 +8,21 @@ import {
   DefaultMessages,
 } from '../types';
 
+export const paginationObject = (paginationObject: any) => {
+  const page = paginationObject.page || 1;
+  const resultPerPage = paginationObject.itemsPerPage || 10;
+  const skip = resultPerPage * (page - 1);
+  const sortOrder = paginationObject.sortOrder === 'asc' ? 1 : -1;
+  const sortField: any =
+    paginationObject.sortField !== ''
+      ? paginationObject.sortField
+      : 'createdAt';
+  const sort: any = {};
+  sort[sortField] = sortOrder;
+
+  return { page, skip, resultPerPage, sort };
+};
+
 //interface for english messages
 interface EngMessages {
   auth: AuthMessages;

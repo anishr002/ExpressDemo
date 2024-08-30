@@ -30,7 +30,7 @@ class ProductService {
   GetProducts = async (
     searchQuery: string = '',
     page: number = 1,
-    limit: number = 10,
+    limit: number = 4,
   ) => {
     try {
       const filter: any = {};

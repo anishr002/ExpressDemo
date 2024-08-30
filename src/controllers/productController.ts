@@ -20,11 +20,11 @@ export const addProduct = asyncErrorHandler(
 
 export const getProducts = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { searchQuery, page, limit } = req.query;
+    const { search, page, limit } = req.query;
     const result = await productService.GetProducts(
-      searchQuery as string,
+      search as string,
       Number(page) || 1,
-      Number(limit) || 10,
+      Number(limit) || 4,
     );
     if (typeof result === 'string') return next(new ErrorHandler(result, 400));
     sendResponse(res, true, 'Products retrieved successfully', result, 200);

@@ -15,8 +15,9 @@ export const loginUser = asyncErrorHandler(
     }
 
     const result = await authService.LoginUser(email, password);
-    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
-
+    if (typeof result === 'string') {
+      return next(new ErrorHandler(result, 400));
+    }
     const { user, token } = result;
     sendResponse(res, true, 'loginSuccess', { user, token }, 200);
   },
@@ -30,7 +31,9 @@ export const forgotPassword = asyncErrorHandler(
     }
 
     const result = await authService.forgotPassword(email);
-    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
+    if (typeof result === 'string') {
+      return next(new ErrorHandler(result, 400));
+    }
 
     res.status(200).json(result);
   },
@@ -46,7 +49,9 @@ export const resetPassword = asyncErrorHandler(
     }
 
     const result = await authService.resetPassword(token, password);
-    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
+    if (typeof result === 'string') {
+      return next(new ErrorHandler(result, 400));
+    }
 
     res.status(200).json(result);
   },

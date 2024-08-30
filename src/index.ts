@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
-import connectDB from './config/db';
+import connectDB from './config/connectDB';
 import CustomError from './utils/CustomError';
 import rootRouter from './router';
 import ErrorHandler from '../src/helpers/error';

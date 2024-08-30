@@ -10,8 +10,9 @@ const storage: StorageEngine = multer.diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, destination: string) => void,
   ): void => {
-    const img_dir: string = 'uploads';
+    const img_dir: string = 'src/uploads';
     if (!fs.existsSync(img_dir)) {
+      console.log(img_dir);
       fs.mkdirSync(img_dir, { recursive: true });
     }
     if (file.mimetype.startsWith('image/')) {
