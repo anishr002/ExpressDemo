@@ -24,6 +24,7 @@ const UserSchema = new Schema<IUser>(
       required: [false, 'Password is required'],
     },
     profile_image: [{ type: String }],
+    role: { type: String, enum: ['admin', 'user'], default: 'user' }, // Default role is 'user'
     provider: {
       type: String,
     },

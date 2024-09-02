@@ -8,6 +8,7 @@ export interface IUser extends Document {
   profile_image: string;
   verification_token: string;
   is_verified: boolean;
+  role: string;
   is_active: boolean;
   is_deleted: boolean;
   phoneNumber: number;
