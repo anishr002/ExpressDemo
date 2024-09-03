@@ -43,6 +43,7 @@ class ProductService {
       }
 
       const products = await Product.find(filter)
+        .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
         .exec();
@@ -53,7 +54,7 @@ class ProductService {
         products,
         totalProducts,
         totalPages: Math.ceil(totalProducts / limit),
-        currentPage: page,
+        // currentPage: page,
       };
     } catch (error: any) {
       logger.error('Error while getting products', error);

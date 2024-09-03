@@ -45,7 +45,7 @@ class authService {
         users,
         totalUsers,
         totalPages: Math.ceil(totalUsers / limit),
-        currentPage: page,
+        // currentPage: page,
       };
     } catch (error: any) {
       logger.error('Error while getting users', error);
