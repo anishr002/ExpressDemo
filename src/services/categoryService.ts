@@ -22,7 +22,7 @@ class CategoryService {
   // Get all categories with search, pagination, and limit
   GetCategories = async (
     searchQuery: string = '',
-    page: number = 1,
+    page?: number,
     limit: number = 4,
   ) => {
     try {
@@ -35,20 +35,35 @@ class CategoryService {
         ];
       }
 
-      const categories = await Category.find(filter)
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      let categories;
+      let totalCategories;
 
-      const totalCategories = await Category.countDocuments(filter);
+      // If page and limit are provided, apply pagination
+      if (page) {
+        categories = await Category.find(filter)
+          .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
 
-      return {
-        categories,
-        totalCategories,
-        totalPages: Math.ceil(totalCategories / limit),
-        // currentPage: page,
-      };
+        totalCategories = await Category.countDocuments(filter);
+
+        return {
+          categories,
+          totalCategories,
+          totalPages: Math.ceil(totalCategories / limit),
+        };
+      } else {
+        // If no page and limit are passed, return all categories
+        categories = await Category.find(filter).sort({ createdAt: -1 }).exec();
+        totalCategories = categories.length;
+
+        return {
+          categories,
+          totalCategories,
+          totalPages: 1, // All categories in one page
+        };
+      }
     } catch (error: any) {
       logger.error('Error while getting categories', error);
       return throwError(error.message);

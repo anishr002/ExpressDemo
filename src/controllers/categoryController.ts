@@ -25,7 +25,7 @@ export const getCategories = asyncErrorHandler(
     const { search, page, limit } = req.query;
     const result = await categoryService.GetCategories(
       search as string,
-      Number(page) || 1,
+      Number(page),
       Number(limit) || 4,
     );
     if (typeof result === 'string') {

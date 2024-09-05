@@ -8,18 +8,25 @@ class ProductService {
   // Add a new product
   AddProduct = async (data: IProduct, images: any) => {
     try {
-      // Handle multiple images
       const imagePaths: string[] = [];
       if (images && images.length > 0) {
         for (const image of images) {
           imagePaths.push('uploads/' + image.filename);
         }
       }
+
+      // Create a new product
       const newProduct = await Product.create({
         ...data,
         ...(imagePaths.length > 0 && { image: imagePaths }),
       });
-      return { product: newProduct };
+
+      // Populate category in the response (directly await the result)
+      const populatedProduct = await Product.findById(newProduct._id).populate(
+        'category',
+      );
+
+      return { product: populatedProduct };
     } catch (error: any) {
       logger.error('Error while adding product', error);
       return throwError(error.message);
@@ -34,7 +41,6 @@ class ProductService {
   ) => {
     try {
       const filter: any = {};
-
       if (searchQuery) {
         filter.$or = [
           { name: { $regex: searchQuery, $options: 'i' } },
@@ -43,10 +49,10 @@ class ProductService {
       }
 
       const products = await Product.find(filter)
+        .populate('category')
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+        .limit(limit);
 
       const totalProducts = await Product.countDocuments(filter);
 
@@ -54,7 +60,6 @@ class ProductService {
         products,
         totalProducts,
         totalPages: Math.ceil(totalProducts / limit),
-        // currentPage: page,
       };
     } catch (error: any) {
       logger.error('Error while getting products', error);
@@ -65,7 +70,7 @@ class ProductService {
   // Get a single product by ID
   GetProductById = async (productId: string) => {
     try {
-      const product = await Product.findById(productId);
+      const product = await Product.findById(productId).populate('category');
       if (!product) {
         return throwError('Product not found');
       }
@@ -97,7 +102,7 @@ class ProductService {
 
       const product = await Product.findByIdAndUpdate(productId, updateData, {
         new: true,
-      });
+      }).populate('category'); // Populate the category
 
       if (!product) {
         return throwError('Product not found');

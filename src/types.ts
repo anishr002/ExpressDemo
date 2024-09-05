@@ -1,4 +1,4 @@
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId, Schema } from 'mongoose';
 
 // Define types for User model
 export interface IUser extends Document {
@@ -26,7 +26,7 @@ export interface IProduct extends Document {
   name: string;
   description: string;
   price: number;
-  category: string;
+  category: Schema.Types.ObjectId; // Use ObjectId
   stock: number;
   image: string[];
 }
