@@ -31,6 +31,11 @@ export interface IProduct extends Document {
   image: string[];
 }
 
+export interface ICategory extends Document {
+  name: string;
+  description: string;
+}
+
 // Define types for other models (if any)
 // Example: for a Post model
 export interface IPost extends Document {

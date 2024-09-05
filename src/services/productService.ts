@@ -77,11 +77,28 @@ class ProductService {
   };
 
   // Update a product by ID
-  UpdateProduct = async (productId: string, data: Partial<IProduct>) => {
+  UpdateProduct = async (
+    productId: string,
+    data: Partial<IProduct>,
+    images: any,
+  ) => {
     try {
-      const product = await Product.findByIdAndUpdate(productId, data, {
+      const imagePaths: string[] = [];
+      if (images && images.length > 0) {
+        for (const image of images) {
+          imagePaths.push('uploads/' + image.filename);
+        }
+      }
+
+      const updateData = {
+        ...data,
+        ...(imagePaths.length > 0 && { image: imagePaths }),
+      };
+
+      const product = await Product.findByIdAndUpdate(productId, updateData, {
         new: true,
       });
+
       if (!product) {
         return throwError('Product not found');
       }

@@ -44,7 +44,11 @@ export const updateProduct = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { productId } = req.params;
     const updateData = req.body;
-    const result = await productService.UpdateProduct(productId, updateData);
+    const result = await productService.UpdateProduct(
+      productId,
+      updateData,
+      req.files,
+    );
     if (typeof result === 'string') return next(new ErrorHandler(result, 400));
     sendResponse(res, true, 'Product updated successfully', result, 200);
   },

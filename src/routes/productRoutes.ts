@@ -18,7 +18,12 @@ productRouter.post(
 );
 productRouter.get('/products', getProducts);
 productRouter.get('/products/:productId', getProductById);
-productRouter.patch('/products/:productId', updateProduct);
+productRouter.patch(
+  '/products/:productId',
+  checkProfileSize,
+  upload.array('image', 10),
+  updateProduct,
+);
 productRouter.delete('/products/:productId', deleteProduct);
 
 export default productRouter;
