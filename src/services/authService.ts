@@ -21,6 +21,8 @@ class authService {
     searchQuery: string = '',
     page: number = 1,
     limit: number = 4,
+    sortBy: string = 'name', // Default sorting by name
+    sortOrder: 'asc' | 'desc' = 'asc', // Default sorting order
   ) => {
     try {
       const filter: FilterQuery<IUser> = {
@@ -35,6 +37,7 @@ class authService {
       }
 
       const users = await UserSchema.find(filter)
+        .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 }) // Apply sorting
         .skip((page - 1) * limit)
         .limit(limit)
         .exec();

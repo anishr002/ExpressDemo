@@ -8,12 +8,25 @@ const authService = new AuthService();
 
 export const getAllUsers = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { search, page = 1, limit = 4 } = req.query;
+    const {
+      search,
+      page = 1,
+      limit = 5,
+      sortBy = 'name',
+      sortOrder = 'asc',
+    } = req.query;
+
+    // Validate sortOrder
+    if (!['asc', 'desc'].includes(sortOrder as string)) {
+      return next(new ErrorHandler('Invalid sort order', 400));
+    }
 
     const users = await authService.Getallusers(
       search as string,
       parseInt(page as string),
       parseInt(limit as string),
+      sortBy as string,
+      sortOrder as 'asc' | 'desc',
     );
 
     if (typeof users === 'string') return next(new ErrorHandler(users, 400));
