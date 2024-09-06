@@ -12,8 +12,8 @@ export const getAllUsers = asyncErrorHandler(
 
     const users = await authService.Getallusers(
       search as string,
-      parseInt(page as string),
-      parseInt(limit as string),
+      Number(page) || 1,
+      Number(limit) || 4,
     );
 
     if (typeof users === 'string') return next(new ErrorHandler(users, 400));

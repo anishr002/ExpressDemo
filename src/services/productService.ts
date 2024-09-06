@@ -33,7 +33,6 @@ class ProductService {
     }
   };
 
-  // Get all products with search, pagination, and limit
   GetProducts = async (
     searchQuery: string = '',
     page: number = 1,
@@ -48,13 +47,48 @@ class ProductService {
         ];
       }
 
-      const products = await Product.find(filter)
-        .populate('category')
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+      // Aggregation pipeline for products
+      const pipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+        { $match: { 'category.isActive': true } },
+        { $sort: { createdAt: -1 } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
 
-      const totalProducts = await Product.countDocuments(filter);
+        { $project: { 'category.__v': 0 } },
+      ];
+
+      // Aggregate products
+      const products = await Product.aggregate(pipeline).exec();
+
+      // Aggregation pipeline for counting documents
+      const countPipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+        { $match: { 'category.isActive': true } },
+        { $count: 'total' },
+      ];
+
+      // Aggregate count of matching products
+      const countResult = await Product.aggregate(countPipeline).exec();
+      const totalProducts = countResult.length > 0 ? countResult[0].total : 0;
 
       return {
         products,

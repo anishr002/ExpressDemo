@@ -60,13 +60,15 @@ class CategoryService {
         };
       } else {
         // If no page and limit are passed, return all categories
+        filter.isActive = true; // Filter by isActive only if page is not provided
+
         categories = await Category.find(filter).sort({ createdAt: -1 }).exec();
         totalCategories = categories.length;
 
         return {
           categories,
           totalCategories,
-          totalPages: 1, // All categories in one page
+          totalPages: 1, // All categories in one page since no pagination is applied
         };
       }
     } catch (error: any) {
