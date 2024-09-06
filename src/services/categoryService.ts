@@ -15,6 +15,11 @@ class CategoryService {
       return { category: newCategory };
     } catch (error: any) {
       logger.error('Error while adding category', error);
+
+      // Handle duplicate key error (E11000 error code)
+      if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
+        return throwError('Category name already exists');
+      }
       return throwError(error.message);
     }
   };
@@ -105,6 +110,10 @@ class CategoryService {
       return { category };
     } catch (error: any) {
       logger.error('Error while updating category', error);
+      // Handle duplicate key error (E11000 error code)
+      if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
+        return throwError('Category name already exists');
+      }
       return throwError(error.message);
     }
   };

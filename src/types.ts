@@ -34,6 +34,7 @@ export interface IProduct extends Document {
 export interface ICategory extends Document {
   name: string;
   description: string;
+  isActive: boolean;
 }
 
 // Define types for other models (if any)
