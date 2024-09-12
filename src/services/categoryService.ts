@@ -29,6 +29,8 @@ class CategoryService {
     searchQuery: string = '',
     page?: number,
     limit: number = 4,
+    sortBy: string = 'createdAt',
+    sortOrder: string = 'asc',
   ) => {
     try {
       const filter: any = {};
@@ -46,7 +48,7 @@ class CategoryService {
       // If page and limit are provided, apply pagination
       if (page) {
         categories = await Category.find(filter)
-          .sort({ createdAt: -1 })
+          .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 }) // Apply sorting
           .skip((page - 1) * limit)
           .limit(limit)
           .exec();
