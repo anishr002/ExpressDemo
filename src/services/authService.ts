@@ -21,6 +21,8 @@ class authService {
     searchQuery: string = '',
     page: number = 1,
     limit: number = 4,
+    sortBy: string = 'name', // Default sorting by name
+    sortOrder: 'asc' | 'desc' = 'asc', // Default sorting order
   ) => {
     try {
       const filter: FilterQuery<IUser> = {
@@ -35,6 +37,7 @@ class authService {
       }
 
       const users = await UserSchema.find(filter)
+        .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 }) // Apply sorting
         .skip((page - 1) * limit)
         .limit(limit)
         .exec();
@@ -45,7 +48,7 @@ class authService {
         users,
         totalUsers,
         totalPages: Math.ceil(totalUsers / limit),
-        // currentPage: page,
+        currentPage: page,
       };
     } catch (error: any) {
       logger.error('Error while getting users', error);
@@ -227,6 +230,20 @@ class authService {
       return { user, token };
     } catch (error: any) {
       return error.message;
+    }
+  };
+
+  // Get a single user by ID
+  GetUserById = async (userId: string) => {
+    try {
+      const user = await UserSchema.findById(userId);
+      if (!user) {
+        return throwError('user not found');
+      }
+      return { user };
+    } catch (error: any) {
+      logger.error('Error while getting user', error);
+      return throwError(error.message);
     }
   };
 

@@ -4,6 +4,7 @@ import {
   createUser,
   createUserbySocial,
   deleteUser,
+  getUserById,
 } from '../controllers/userController';
 import { checkProfileSize, upload } from '../helpers/multer';
 import protect from '../middleware/authUserMiddleware';
@@ -12,6 +13,7 @@ const userRouter = Router();
 
 // Endpoint to get all users
 userRouter.get('/getall', protect, getAllUsers);
+userRouter.get('/profile/:userId', protect, getUserById);
 
 // Endpoint to register a new user with image uploads
 userRouter.post(
