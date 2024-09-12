@@ -23,6 +23,23 @@ export const loginUser = asyncErrorHandler(
   },
 );
 
+export const SocialLoginUser = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    if (!email) {
+      return next(new ErrorHandler('Email are required', 400));
+    }
+
+    const result = await authService.SocialLoginUser(email);
+    if (typeof result === 'string') {
+      return next(new ErrorHandler(result, 400));
+    }
+    const { user, token } = result;
+    sendResponse(res, true, 'loginSuccess', { user, token }, 200);
+  },
+);
+
 export const forgotPassword = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;

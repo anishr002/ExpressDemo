@@ -18,7 +18,8 @@ const ProductSchema = new Schema<IProduct>(
       required: [true, 'Price is required'],
     },
     category: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
       required: [true, 'Category is required'],
     },
     stock: {

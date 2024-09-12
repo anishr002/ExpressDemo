@@ -8,25 +8,31 @@ class ProductService {
   // Add a new product
   AddProduct = async (data: IProduct, images: any) => {
     try {
-      // Handle multiple images
       const imagePaths: string[] = [];
       if (images && images.length > 0) {
         for (const image of images) {
           imagePaths.push('uploads/' + image.filename);
         }
       }
+
+      // Create a new product
       const newProduct = await Product.create({
         ...data,
         ...(imagePaths.length > 0 && { image: imagePaths }),
       });
-      return { product: newProduct };
+
+      // Populate category in the response (directly await the result)
+      const populatedProduct = await Product.findById(newProduct._id).populate(
+        'category',
+      );
+
+      return { product: populatedProduct };
     } catch (error: any) {
       logger.error('Error while adding product', error);
       return throwError(error.message);
     }
   };
 
-  // Get all products with search, pagination, and limit
   GetProducts = async (
     searchQuery: string = '',
     page: number = 1,
@@ -34,7 +40,6 @@ class ProductService {
   ) => {
     try {
       const filter: any = {};
-
       if (searchQuery) {
         filter.$or = [
           { name: { $regex: searchQuery, $options: 'i' } },
@@ -42,18 +47,53 @@ class ProductService {
         ];
       }
 
-      const products = await Product.find(filter)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      // Aggregation pipeline for products
+      const pipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+        { $match: { 'category.isActive': true } },
+        { $sort: { createdAt: -1 } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
 
-      const totalProducts = await Product.countDocuments(filter);
+        { $project: { 'category.__v': 0 } },
+      ];
+
+      // Aggregate products
+      const products = await Product.aggregate(pipeline).exec();
+
+      // Aggregation pipeline for counting documents
+      const countPipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+        { $match: { 'category.isActive': true } },
+        { $count: 'total' },
+      ];
+
+      // Aggregate count of matching products
+      const countResult = await Product.aggregate(countPipeline).exec();
+      const totalProducts = countResult.length > 0 ? countResult[0].total : 0;
 
       return {
         products,
         totalProducts,
         totalPages: Math.ceil(totalProducts / limit),
-        currentPage: page,
       };
     } catch (error: any) {
       logger.error('Error while getting products', error);
@@ -64,7 +104,7 @@ class ProductService {
   // Get a single product by ID
   GetProductById = async (productId: string) => {
     try {
-      const product = await Product.findById(productId);
+      const product = await Product.findById(productId).populate('category');
       if (!product) {
         return throwError('Product not found');
       }
@@ -76,11 +116,28 @@ class ProductService {
   };
 
   // Update a product by ID
-  UpdateProduct = async (productId: string, data: Partial<IProduct>) => {
+  UpdateProduct = async (
+    productId: string,
+    data: Partial<IProduct>,
+    images: any,
+  ) => {
     try {
-      const product = await Product.findByIdAndUpdate(productId, data, {
+      const imagePaths: string[] = [];
+      if (images && images.length > 0) {
+        for (const image of images) {
+          imagePaths.push('uploads/' + image.filename);
+        }
+      }
+
+      const updateData = {
+        ...data,
+        ...(imagePaths.length > 0 && { image: imagePaths }),
+      };
+
+      const product = await Product.findByIdAndUpdate(productId, updateData, {
         new: true,
-      });
+      }).populate('category'); // Populate the category
+
       if (!product) {
         return throwError('Product not found');
       }

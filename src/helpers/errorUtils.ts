@@ -1,6 +1,6 @@
 import CustomError from '../utils/CustomError';
 
-// this function is used for the throw an error from the service
+// This function creates an error but doesn't throw it immediately
 export const throwError = (message: any, status_code = 400) => {
-  throw new CustomError(message, status_code);
+  return new CustomError(message, status_code);
 };

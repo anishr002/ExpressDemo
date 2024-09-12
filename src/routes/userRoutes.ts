@@ -6,11 +6,12 @@ import {
   deleteUser,
 } from '../controllers/userController';
 import { checkProfileSize, upload } from '../helpers/multer';
+import protect from '../middleware/authUserMiddleware';
 
 const userRouter = Router();
 
 // Endpoint to get all users
-userRouter.get('/getall', getAllUsers);
+userRouter.get('/getall', protect, getAllUsers);
 
 // Endpoint to register a new user with image uploads
 userRouter.post(
@@ -26,6 +27,6 @@ userRouter.post(
   createUserbySocial, // Controller function
 );
 
-userRouter.delete('/deleteUser/:userId', deleteUser);
+userRouter.delete('/deleteUser/:userId', protect, deleteUser);
 
 export default userRouter;

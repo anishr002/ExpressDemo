@@ -48,7 +48,7 @@ class authService {
         users,
         totalUsers,
         totalPages: Math.ceil(totalUsers / limit),
-        currentPage: page,
+        // currentPage: page,
       };
     } catch (error: any) {
       logger.error('Error while getting users', error);
@@ -191,6 +191,33 @@ class authService {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return throwError(returnMessage('auth', 'invalidPassword'));
+      }
+
+      // Generate a JWT token
+      const token = jwt.sign(
+        { id: user._id, email: user.email },
+        process.env.JWT_SECRET as string,
+        { expiresIn: '1h' },
+      );
+
+      return { user, token };
+    } catch (error: any) {
+      return error.message;
+    }
+  };
+
+  // Social Login user
+  SocialLoginUser = async (email: string) => {
+    try {
+      // Validate email format
+      if (!validateEmail(email)) {
+        return throwError(returnMessage('auth', 'invalidEmail'));
+      }
+
+      // Find the user by email
+      const user = await UserSchema.findOne({ email });
+      if (!user) {
+        return throwError(returnMessage('auth', 'userNotFound'));
       }
 
       // Generate a JWT token
