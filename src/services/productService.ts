@@ -3,6 +3,7 @@
 import Product, { IProduct } from '../models/Product';
 import logger from '../logger/index';
 import { throwError } from '../helpers/errorUtils';
+import mongoose from 'mongoose';
 
 class ProductService {
   // Add a new product
@@ -101,6 +102,54 @@ class ProductService {
     }
   };
 
+  FilterProducts = async (
+    category?: string,
+    minPrice?: number,
+    maxPrice?: number,
+  ) => {
+    try {
+      // Initialize filter object
+      const filter: any = {};
+
+      // Add category filter if provided
+      if (category) {
+        filter['category._id'] = new mongoose.Types.ObjectId(category);
+      }
+
+      // Add price range filter if provided
+      if (minPrice !== undefined || maxPrice !== undefined) {
+        filter.price = {};
+        if (minPrice !== undefined) filter.price.$gte = minPrice;
+        if (maxPrice !== undefined) filter.price.$lte = maxPrice;
+      }
+
+      // Aggregation pipeline for products
+      const pipeline: any[] = [
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+        { $match: { 'category.isActive': true } },
+        { $match: filter },
+
+        { $project: { 'category.__v': 0 } },
+      ];
+
+      // Aggregate products
+      const products = await Product.aggregate(pipeline).exec();
+
+      return { products };
+    } catch (error: any) {
+      logger.error('Error while filtering products', error);
+      return throwError(error.message);
+    }
+  };
+
   // Get a single product by ID
   GetProductById = async (productId: string) => {
     try {
@@ -136,7 +185,7 @@ class ProductService {
 
       const product = await Product.findByIdAndUpdate(productId, updateData, {
         new: true,
-      }).populate('category'); // Populate the category
+      }).populate('category');
 
       if (!product) {
         return throwError('Product not found');

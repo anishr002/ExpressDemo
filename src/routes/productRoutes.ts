@@ -2,6 +2,7 @@ import express from 'express';
 import {
   addProduct,
   deleteProduct,
+  filterProducts,
   getProductById,
   getProducts,
   updateProduct,
@@ -19,6 +20,8 @@ productRouter.post(
   addProduct,
 );
 productRouter.get('/products', protect, getProducts);
+productRouter.get('/userProducts', protect, filterProducts);
+
 productRouter.get('/products/:productId', protect, getProductById);
 productRouter.patch(
   '/products/:productId',

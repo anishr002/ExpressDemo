@@ -35,6 +35,36 @@ export const getProducts = asyncErrorHandler(
   },
 );
 
+export const filterProducts = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { category, minPrice, maxPrice } = req.query;
+
+    // Parse query parameters
+    const categoryFilter = category as string;
+    const minPriceFilter = Number(minPrice);
+    const maxPriceFilter = Number(maxPrice);
+
+    // Call service method with provided parameters
+    const result = await productService.FilterProducts(
+      categoryFilter,
+      isNaN(minPriceFilter) ? undefined : minPriceFilter,
+      isNaN(maxPriceFilter) ? undefined : maxPriceFilter,
+    );
+
+    if (typeof result === 'string') {
+      return next(new ErrorHandler(result, 400));
+    }
+
+    sendResponse(
+      res,
+      true,
+      'Filtered products retrieved successfully',
+      result,
+      200,
+    );
+  },
+);
+
 export const getProductById = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { productId } = req.params;
