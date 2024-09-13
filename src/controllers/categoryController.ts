@@ -22,11 +22,23 @@ export const addCategory = asyncErrorHandler(
 
 export const getCategories = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { search, page, limit } = req.query;
+    const {
+      search,
+      page,
+      limit,
+      sortBy = 'createdAt',
+      sortOrder = 'asc',
+    } = req.query;
+    // Validate sortOrder
+    if (!['asc', 'desc'].includes(sortOrder as string)) {
+      return next(new ErrorHandler('Invalid sort order', 400));
+    }
     const result = await categoryService.GetCategories(
       search as string,
       Number(page),
       Number(limit) || 4,
+      sortBy as string,
+      sortOrder as 'asc' | 'desc',
     );
     if (typeof result === 'string') {
       return next(new ErrorHandler(result, 400));

@@ -38,7 +38,12 @@ class ProductService {
     searchQuery: string = '',
     page: number = 1,
     limit: number = 4,
+    sortBy: string = 'createdAt', // Default sorting by name
+    sortOrder: 'asc' | 'desc' = 'asc', // Default sorting order
   ) => {
+    // Determine sorting order: 1 for ascending and -1 for descending
+    const sortOrderValue = sortOrder === 'asc' ? 1 : -1;
+    console.log(sortOrder, 'sortorder', 'sorcoloum', sortBy);
     try {
       const filter: any = {};
       if (searchQuery) {
@@ -61,10 +66,9 @@ class ProductService {
         },
         { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
         { $match: { 'category.isActive': true } },
-        { $sort: { createdAt: -1 } },
+        { $sort: { [sortBy]: sortOrderValue } }, // Sort by dynamic field and order
         { $skip: (page - 1) * limit },
         { $limit: limit },
-
         { $project: { 'category.__v': 0 } },
       ];
 
