@@ -49,18 +49,18 @@ export const getProducts = asyncErrorHandler(
   },
 );
 
-export const filterProducts = asyncErrorHandler(
+export const UserfilterProducts = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { category, minPrice, maxPrice } = req.query;
+    const { categories, minPrice, maxPrice } = req.query;
 
     // Parse query parameters
-    const categoryFilter = category as string;
+    const categoryFilter = categories ? (categories as string).split(',') : [];
     const minPriceFilter = Number(minPrice);
     const maxPriceFilter = Number(maxPrice);
 
     // Call service method with provided parameters
-    const result = await productService.FilterProducts(
-      categoryFilter,
+    const result = await productService.UserFilterProducts(
+      categoryFilter.length > 0 ? categoryFilter : undefined,
       isNaN(minPriceFilter) ? undefined : minPriceFilter,
       isNaN(maxPriceFilter) ? undefined : maxPriceFilter,
     );

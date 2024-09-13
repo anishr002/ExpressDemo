@@ -2,10 +2,10 @@ import express from 'express';
 import {
   addProduct,
   deleteProduct,
-  filterProducts,
   getProductById,
   getProducts,
   updateProduct,
+  UserfilterProducts,
 } from '../controllers/productController';
 import { checkProfileSize, upload } from '../helpers/multer';
 import protect from '../middleware/authUserMiddleware';
@@ -20,7 +20,7 @@ productRouter.post(
   addProduct,
 );
 productRouter.get('/products', protect, getProducts);
-productRouter.get('/userProducts', protect, filterProducts);
+productRouter.get('/userProducts', protect, UserfilterProducts);
 
 productRouter.get('/products/:productId', protect, getProductById);
 productRouter.patch(

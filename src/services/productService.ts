@@ -106,8 +106,8 @@ class ProductService {
     }
   };
 
-  FilterProducts = async (
-    category?: string,
+  UserFilterProducts = async (
+    categories?: string[], // Accept an array of category IDs
     minPrice?: number,
     maxPrice?: number,
   ) => {
@@ -116,15 +116,21 @@ class ProductService {
       const filter: any = {};
 
       // Add category filter if provided
-      if (category) {
-        filter['category._id'] = new mongoose.Types.ObjectId(category);
+      if (categories && categories.length > 0) {
+        filter['category._id'] = {
+          $in: categories.map((id) => new mongoose.Types.ObjectId(id)), // Use $in to match multiple categories
+        };
       }
 
       // Add price range filter if provided
       if (minPrice !== undefined || maxPrice !== undefined) {
         filter.price = {};
-        if (minPrice !== undefined) filter.price.$gte = minPrice;
-        if (maxPrice !== undefined) filter.price.$lte = maxPrice;
+        if (minPrice !== undefined) {
+          filter.price.$gte = minPrice;
+        }
+        if (maxPrice !== undefined) {
+          filter.price.$lte = maxPrice;
+        }
       }
 
       // Aggregation pipeline for products
@@ -140,7 +146,6 @@ class ProductService {
         { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
         { $match: { 'category.isActive': true } },
         { $match: filter },
-
         { $project: { 'category.__v': 0 } },
       ];
 
