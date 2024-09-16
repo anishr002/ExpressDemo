@@ -146,3 +146,16 @@ export const deleteUser = asyncErrorHandler(
     sendResponse(res, true, 'User deleted successfully', result, 200);
   },
 );
+
+export const editUser = asyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    const result = await authService.edituserProfile(
+      userId,
+      req.body,
+      req.files,
+    );
+    if (typeof result === 'string') return next(new ErrorHandler(result, 400));
+    sendResponse(res, true, 'UserProfile update successfully', result, 200);
+  },
+);

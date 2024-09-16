@@ -324,6 +324,37 @@ class authService {
       return throwError(error.message);
     }
   };
+
+  edituserProfile = async (userId: string, updateData: any, images: any) => {
+    try {
+      const user = await UserSchema.findById(userId);
+      if (!user) {
+        return throwError(returnMessage('auth', 'userNotFound'));
+      }
+
+      const imagePaths: any = [];
+      if (images && images.length > 0) {
+        for (const image of images) {
+          imagePaths.push('uploads/' + image.filename);
+        }
+      }
+
+      if (updateData.name) user.name = updateData.name;
+      if (updateData.email) user.email = updateData.email;
+      if (updateData.phoneNumber) user.phoneNumber = updateData.phoneNumber;
+      if (updateData.gender) user.gender = updateData.gender;
+      if (updateData.skills) user.skills = updateData.skills;
+      if (imagePaths) user.profile_image = imagePaths;
+
+      // Save updated user
+      await user.save();
+
+      return { message: 'User updated successfully' };
+    } catch (error: any) {
+      logger.error('Error while deleting product', error);
+      return throwError(error.message);
+    }
+  };
 }
 
 export default authService;

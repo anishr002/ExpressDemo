@@ -5,6 +5,7 @@ import {
   createUserbySocial,
   deleteUser,
   getUserById,
+  editUser,
 } from '../controllers/userController';
 import { checkProfileSize, upload } from '../helpers/multer';
 import protect from '../middleware/authUserMiddleware';
@@ -30,5 +31,11 @@ userRouter.post(
 );
 
 userRouter.delete('/deleteUser/:userId', protect, deleteUser);
+userRouter.put(
+  '/updateusers/:userId',
+  checkProfileSize, // Check file size before processing
+  upload.array('profile_image', 10),
+  editUser,
+);
 
 export default userRouter;
