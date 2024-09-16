@@ -38,12 +38,11 @@ class ProductService {
     searchQuery: string = '',
     page: number = 1,
     limit: number = 4,
-    sortBy: string = 'createdAt', // Default sorting by name
+    sortBy: string = 'createdAt', // Default sorting by createdAt
     sortOrder: 'asc' | 'desc' = 'asc', // Default sorting order
   ) => {
-    // Determine sorting order: 1 for ascending and -1 for descending
     const sortOrderValue = sortOrder === 'asc' ? 1 : -1;
-    console.log(sortOrder, 'sortorder', 'sorcoloum', sortBy);
+
     try {
       const filter: any = {};
       if (searchQuery) {
@@ -52,6 +51,12 @@ class ProductService {
           { description: { $regex: searchQuery, $options: 'i' } },
         ];
       }
+
+      // Define the sorting object based on the `sortBy` value
+      const sortField =
+        sortBy === 'category'
+          ? { 'category.name': sortOrderValue } // Sort by category name
+          : { [sortBy]: sortOrderValue }; // Sort by the given field
 
       // Aggregation pipeline for products
       const pipeline: any[] = [
@@ -66,16 +71,15 @@ class ProductService {
         },
         { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
         { $match: { 'category.isActive': true } },
-        { $sort: { [sortBy]: sortOrderValue } }, // Sort by dynamic field and order
+        { $sort: sortField }, // Sort dynamically by field and order
         { $skip: (page - 1) * limit },
         { $limit: limit },
         { $project: { 'category.__v': 0 } },
       ];
 
-      // Aggregate products
       const products = await Product.aggregate(pipeline).exec();
 
-      // Aggregation pipeline for counting documents
+      // Count pipeline for total number of matching products
       const countPipeline: any[] = [
         { $match: filter },
         {
@@ -91,7 +95,6 @@ class ProductService {
         { $count: 'total' },
       ];
 
-      // Aggregate count of matching products
       const countResult = await Product.aggregate(countPipeline).exec();
       const totalProducts = countResult.length > 0 ? countResult[0].total : 0;
 

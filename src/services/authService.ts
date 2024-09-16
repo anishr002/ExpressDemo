@@ -344,12 +344,24 @@ class authService {
         }
       }
 
-      if (updateData.name) user.name = updateData.name;
-      if (updateData.email) user.email = updateData.email;
-      if (updateData.phoneNumber) user.phoneNumber = updateData.phoneNumber;
-      if (updateData.gender) user.gender = updateData.gender;
-      if (updateData.skills) user.skills = skills;
-      if (imagePaths) user.profile_image = imagePaths;
+      if (updateData.name) {
+        user.name = updateData.name;
+      }
+      if (updateData.email) {
+        user.email = updateData.email;
+      }
+      if (updateData.phoneNumber) {
+        user.phoneNumber = updateData.phoneNumber;
+      }
+      if (updateData.gender) {
+        user.gender = updateData.gender;
+      }
+      if (updateData.skills) {
+        user.skills = skills;
+      }
+      if (imagePaths) {
+        user.profile_image = imagePaths;
+      }
 
       // Save updated user
       await user.save();

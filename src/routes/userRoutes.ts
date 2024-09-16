@@ -33,6 +33,7 @@ userRouter.post(
 userRouter.delete('/deleteUser/:userId', protect, deleteUser);
 userRouter.put(
   '/updateusers/:userId',
+  protect,
   checkProfileSize, // Check file size before processing
   upload.array('profile_image', 10),
   editUser,
