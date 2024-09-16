@@ -325,7 +325,12 @@ class authService {
     }
   };
 
-  edituserProfile = async (userId: string, updateData: any, images: any) => {
+  edituserProfile = async (
+    userId: string,
+    updateData: any,
+    images: any,
+    skills: any,
+  ) => {
     try {
       const user = await UserSchema.findById(userId);
       if (!user) {
@@ -343,7 +348,7 @@ class authService {
       if (updateData.email) user.email = updateData.email;
       if (updateData.phoneNumber) user.phoneNumber = updateData.phoneNumber;
       if (updateData.gender) user.gender = updateData.gender;
-      if (updateData.skills) user.skills = updateData.skills;
+      if (updateData.skills) user.skills = skills;
       if (imagePaths) user.profile_image = imagePaths;
 
       // Save updated user

@@ -150,10 +150,45 @@ export const deleteUser = asyncErrorHandler(
 export const editUser = asyncErrorHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
+    let { skills } = req.body;
+
+    if (typeof skills === 'string') {
+      try {
+        skills = JSON.parse(skills);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        return next(
+          new ErrorHandler(
+            'Invalid format for skills, could not parse JSON',
+            400,
+          ),
+        );
+      }
+    }
+
+    if (!Array.isArray(skills)) {
+      return next(
+        new ErrorHandler('Skills should be an array of numbers', 400),
+      );
+    }
+
+    skills = skills.map((skill) => Number(skill));
+
+    if (
+      !skills.every(
+        (skill: number) => typeof skill === 'number' && !isNaN(skill),
+      )
+    ) {
+      return next(
+        new ErrorHandler('All elements in skills should be numbers', 400),
+      );
+    }
+
     const result = await authService.edituserProfile(
       userId,
       req.body,
       req.files,
+      skills,
     );
     if (typeof result === 'string') return next(new ErrorHandler(result, 400));
     sendResponse(res, true, 'UserProfile update successfully', result, 200);
