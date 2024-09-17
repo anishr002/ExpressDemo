@@ -13,6 +13,8 @@ import sendEmail from '../helpers/sendMail';
 import jwt from 'jsonwebtoken'; // Import jsonwebtoken
 import dotenv from 'dotenv';
 import { FilterQuery } from 'mongoose';
+import fs from 'fs';
+import path from 'path';
 dotenv.config();
 
 class authService {
@@ -183,6 +185,7 @@ class authService {
 
       // Find the user by email
       const user = await UserSchema.findOne({ email });
+      console.log(user, 'found userss');
       if (!user) {
         return throwError(returnMessage('auth', 'userNotFound'));
       }
@@ -190,6 +193,7 @@ class authService {
       // Compare passwords
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
+        console.log('password not match');
         return throwError(returnMessage('auth', 'invalidPassword'));
       }
 
@@ -350,7 +354,7 @@ class authService {
       if (updateData.gender) user.gender = updateData.gender;
       if (updateData.skills) user.skills = skills;
       if (imagePaths) user.profile_image = imagePaths;
-
+      console.log(user, 'users');
       // Save updated user
       await user.save();
 

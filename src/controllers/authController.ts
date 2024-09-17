@@ -15,6 +15,7 @@ export const loginUser = asyncErrorHandler(
     }
 
     const result = await authService.LoginUser(email, password);
+    console.log(result, 'result');
     if (typeof result === 'string') {
       return next(new ErrorHandler(result, 400));
     }
