@@ -17,7 +17,11 @@ async function genrateToken() {
   return res?.data?.access_token;
 }
 
-const createOrder = async () => {
+const createOrder = async (
+  req: Request,
+  response: Response,
+  next: NextFunction,
+) => {
   const accessToken = await genrateToken();
 
   const res = await axios({
@@ -59,7 +63,8 @@ const createOrder = async () => {
   const result = res?.data?.links?.find(
     (item: any) => item.rel == 'approve',
   ).href;
-  console.log(result, 'result');
+
+  sendResponse(response, true, 'get link', result, 200);
 };
 
 const capturePaymen = async (
@@ -80,8 +85,7 @@ const capturePaymen = async (
       Authorization: 'Bearer' + ' ' + accessToken,
     },
   });
-  console.log(res);
-  return res.data;
+  sendResponse(Response, true, 'payment confirm', res.data, 200);
 };
 
 export { capturePaymen, createOrder };
